@@ -1,13 +1,15 @@
 #define DEBUG
+using System;
 using UnityEngine;
 
 
-[RequireComponent(typeof(Collider))]
 public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
 {
-    public Collider Collider { get; private set; }
+    public Collider Collider => _collider;
+    public BodyType Type => _bodyType;
 
     [SerializeField] private BodyType _bodyType = BodyType.Dynamic;
+    [SerializeField] private Collider _collider;
     [SerializeField] private float _mass = 1f;
     [SerializeField] private float _bounciness = 0.8f;
     [SerializeField] private bool _useGravity = true;
@@ -20,13 +22,7 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
 
     private void Awake()
     {
-        Collider = this.GetComponent<Collider>();
         AlternativeCollisionDetection.Add(this);
-
-        if (_bodyType == BodyType.Dynamic)
-        {
-            AddForce(transform.forward * 10000);
-        }
     }
 
     private void FixedUpdate()
@@ -52,6 +48,12 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
         _velocity += _accumulatedForce * deltaTime;
         transform.position += _velocity * deltaTime;
         _accumulatedForce = Vector3.zero;
+    }
+
+    public void ResetVelocity()
+    {
+        _accumulatedForce = Vector3.zero;
+        _velocity = Vector3.zero;
     }
 
     public void OnAlternativeCollisionEnter(AlternativeCollision collision)

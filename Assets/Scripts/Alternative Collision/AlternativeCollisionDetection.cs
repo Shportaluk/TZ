@@ -28,9 +28,18 @@ public sealed class AlternativeCollisionDetection : MonoBehaviour
         for (int i = 0; i < _collisionHandlers.Count; i++)
         {
             ICollisionHandler a = _collisionHandlers[i];
+            if (a.Collider.gameObject.activeInHierarchy == false)
+                continue;
+
             for (int j = i + 1; j < _collisionHandlers.Count; j++)
             {
                 ICollisionHandler b = _collisionHandlers[j];
+                if (b.Collider.gameObject.activeInHierarchy == false)
+                    continue;
+
+                if (a.Type == AlternativeRigidBody.BodyType.Static && b.Type == AlternativeRigidBody.BodyType.Static)
+                    continue;
+
                 if (CheckCollision(a.Collider, b.Collider, out AlternativeCollision collision))
                 {
                     collision.collider = b.Collider;

@@ -121,7 +121,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sizeMin: 0.04
   _sizeMax: 0.4
-  _duration: 2
+  _duration: 5
+  _minTouchesToExplotiob: 2
   _meshRenderer: {fileID: 291363241927161479}
   _meshFilter: {fileID: 1969007927994930922}
   _material: {fileID: 2100000, guid: a0b1a42e8f5224b528416239938952e4, type: 2}

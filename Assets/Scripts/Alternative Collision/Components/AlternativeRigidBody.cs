@@ -9,6 +9,7 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
 
     public Collider Collider => _collider;
     public BodyType Type => _bodyType;
+    public float Mass => _mass;
 
     [SerializeField] private BodyType _bodyType = BodyType.Dynamic;
     [SerializeField] private Collider _collider;
@@ -16,14 +17,12 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
     [SerializeField] private float _bounciness = 0.8f;
     [SerializeField] private bool _useGravity = true;
 
-    private readonly static Vector3 _gravity = new Vector3(0, -9.81f, 0);
-
-    private Vector3 _accumulatedForce = Vector3.zero;
-    private Vector3 _velocity = Vector3.zero;
+    private Data _data = new Data();
 
 
     private void Awake()
     {
+        _data.useGravity = _useGravity;
         AlternativeCollisionDetection.Add(this);
     }
 
@@ -31,31 +30,40 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
     {
         if (_bodyType == BodyType.Dynamic)
         {
-            ApplyPhysics(Time.fixedDeltaTime);
+            ApplyPhysics();
         }
     }
 
     public void AddForce(Vector3 force)
     {
-        _accumulatedForce += force / _mass;
+        _data.accumulatedForce += force / _mass;
     }
 
-    private void ApplyPhysics(float deltaTime)
+    private void ApplyPhysics()
     {
-        if (_useGravity)
+        _data.position = transform.position;
+        _data = Simulate(_data);
+        transform.position = _data.position;
+    }
+
+    public static Data Simulate(Data data)
+    {
+        if (data.useGravity)
         {
-            _accumulatedForce += _gravity;
+            data.accumulatedForce += Physics.gravity;
         }
 
-        _velocity += _accumulatedForce * deltaTime;
-        transform.position += _velocity * deltaTime;
-        _accumulatedForce = Vector3.zero;
+        data.velocity += data.accumulatedForce * Time.fixedDeltaTime;
+        data.position += data.velocity * Time.fixedDeltaTime;
+        data.accumulatedForce = Vector3.zero;
+
+        return data;
     }
 
     public void ResetVelocity()
     {
-        _accumulatedForce = Vector3.zero;
-        _velocity = Vector3.zero;
+        _data.accumulatedForce = Vector3.zero;
+        _data.velocity = Vector3.zero;
     }
 
     public void OnAlternativeCollisionEnter(AlternativeCollision collision)
@@ -66,14 +74,21 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
         Debug.DrawRay(Collider.bounds.center, _velocity, Color.cyan, 0.5f);
 #endif
 
-        _velocity = Vector3.Reflect(_velocity, collision.contactNormal) * _bounciness;
+        _data.velocity = Vector3.Reflect(_data.velocity, collision.contactNormal) * _bounciness;
         onCollisionEnter?.Invoke(this, collision);
     }
-
 
     public enum BodyType
     {
         Static = 0,
         Dynamic = 1
+    }
+
+    public struct Data
+    {
+        public bool useGravity;
+        public Vector3 accumulatedForce;
+        public Vector3 velocity;
+        public Vector3 position;
     }
 }

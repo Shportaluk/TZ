@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Projectile : BasePoolElement
@@ -73,6 +74,23 @@ public class Projectile : BasePoolElement
         {
             onExplotion?.Invoke(this);
             SetUnUse();
+        }
+    }
+
+    public static IEnumerable<Vector3> GeneratePath(Vector3 startPosition, Vector3 force, float mass, float simulationTime)
+    {
+        float elapsedTime = 0f;
+        var data = new AlternativeRigidBody.Data();
+        data.position = startPosition;
+        data.useGravity = true;
+        data.accumulatedForce += force / mass;
+
+        yield return startPosition;
+        while (elapsedTime < simulationTime)
+        {
+            data = AlternativeRigidBody.Simulate(data);
+            yield return data.position;
+            elapsedTime += Time.fixedDeltaTime;
         }
     }
 }

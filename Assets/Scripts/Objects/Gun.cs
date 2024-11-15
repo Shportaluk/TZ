@@ -11,6 +11,7 @@ public class Gun : MonoBehaviour, ICameraShakeGenerator
 
     public bool IsReloading { get; private set; } = false;
     public float Power => _power;
+    public Transform SpawnPoint => _spawnPoint;
 
     [SerializeField] private float _power = 10000;
     [SerializeField] private Transform _tranfromRotationX;

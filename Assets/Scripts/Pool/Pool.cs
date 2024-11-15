@@ -7,6 +7,8 @@ using UnityEngine;
 public class Pool<TItem> : MonoBehaviour
     where TItem : MonoBehaviour, IPoolElement
 {
+    public event Action<TItem> onInstantiated;
+
     [SerializeField] private TItem _prefab;
     private readonly List<TItem> _items = new List<TItem>();
 
@@ -18,6 +20,7 @@ public class Pool<TItem> : MonoBehaviour
         {
             item = GameObject.Instantiate(_prefab);
             _items.Add(item);
+            onInstantiated?.Invoke(item);
         }
 
         item.SetUse();

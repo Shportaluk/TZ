@@ -1,9 +1,12 @@
 //#define DEBUG_MOD
+using System;
 using UnityEngine;
 
 
 public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
 {
+    public event Action<AlternativeRigidBody, AlternativeCollision> onCollisionEnter;
+
     public Collider Collider => _collider;
     public BodyType Type => _bodyType;
 
@@ -64,6 +67,7 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
 #endif
 
         _velocity = Vector3.Reflect(_velocity, collision.contactNormal) * _bounciness;
+        onCollisionEnter?.Invoke(this, collision);
     }
 
 

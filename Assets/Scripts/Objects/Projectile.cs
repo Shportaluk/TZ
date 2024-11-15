@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class Projectile : BasePoolElement
 {
+    public event Action<Projectile> onExplotion;
+
     [SerializeField] private float _sizeMin = 0.75f;
     [SerializeField] private float _sizeMax = 1.25f;
     [SerializeField] private float _duration = 2f;
@@ -12,6 +15,8 @@ public class Projectile : BasePoolElement
     [SerializeField] private AlternativeRigidBody _alternativeRigidBody;
     private static readonly IMeshGenerator _boxGenerator = new BoxGenerator();
     private float _currentTimeDuration = 0f;
+    private int _currentTouchs = 0;
+
 
     private void Awake()
     {
@@ -21,6 +26,8 @@ public class Projectile : BasePoolElement
         _meshFilter.mesh = _boxGenerator.Generate(size);
 
         _collider.size = size;
+
+        _alternativeRigidBody.onCollisionEnter += OnAlternativeRigidBodyCollisionEnter;
     }
 
     private void Update()
@@ -38,6 +45,7 @@ public class Projectile : BasePoolElement
         base.SetUse();
         gameObject.SetActive(true);
         _currentTimeDuration = 0f;
+        _currentTouchs = 0;
         _alternativeRigidBody.ResetVelocity();
     }
 
@@ -49,11 +57,21 @@ public class Projectile : BasePoolElement
 
     private Vector3 RandomSize(float min, float max)
     {
-        return Vector3.one * Random.Range(min, max);
+        return Vector3.one * UnityEngine.Random.Range(min, max);
     }
 
     public void AddForce(float power)
     {
         _alternativeRigidBody.AddForce(transform.forward * power);
+    }
+
+    private void OnAlternativeRigidBodyCollisionEnter(AlternativeRigidBody arg1, AlternativeCollision arg2)
+    {
+        _currentTouchs++;
+        if(_currentTouchs == 2)
+        {
+            onExplotion?.Invoke(this);
+            SetUnUse();
+        }
     }
 }

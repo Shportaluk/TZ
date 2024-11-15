@@ -8,6 +8,7 @@ public class Projectile : BasePoolElement
     [SerializeField] private float _sizeMin = 0.75f;
     [SerializeField] private float _sizeMax = 1.25f;
     [SerializeField] private float _duration = 2f;
+    [SerializeField, Min(1)] private int _minTouchesToExplotiob = 2;
     [SerializeField] private MeshRenderer _meshRenderer;
     [SerializeField] private MeshFilter _meshFilter;
     [SerializeField] private Material _material;
@@ -68,7 +69,7 @@ public class Projectile : BasePoolElement
     private void OnAlternativeRigidBodyCollisionEnter(AlternativeRigidBody arg1, AlternativeCollision arg2)
     {
         _currentTouchs++;
-        if(_currentTouchs == 2)
+        if(_currentTouchs >= _minTouchesToExplotiob)
         {
             onExplotion?.Invoke(this);
             SetUnUse();

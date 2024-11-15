@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Gun : MonoBehaviour
+public class Gun : MonoBehaviour, ICameraShakeGenerator
 {
+    public event Action<float> onGeneratedShake;
+    public event Action<Gun, Projectile> onFire;
     public event Action<float> onChangedPower;
     public event Action<float> onReloadingProgress;
 
@@ -20,10 +22,10 @@ public class Gun : MonoBehaviour
     [SerializeField] private float _rotationMaxY = 45;
     [SerializeField] private float _reloadTime = 0.5f;
 
+    private const float SHAKE_MULTIPLIER = 0.0001f;
     private Func<Projectile> _funcGetProjectile;
     private Vector2 _currentRotation = Vector3.zero;
     private Coroutine _reloadingCor;
-
 
     public void Init(Func<Projectile> funcGetProjectile)
     {
@@ -40,6 +42,8 @@ public class Gun : MonoBehaviour
         projectile.transform.rotation = _spawnPoint.rotation;
         projectile.AddForce(_power);
 
+        onFire?.Invoke(this, projectile);
+        onGeneratedShake?.Invoke(Power * SHAKE_MULTIPLIER);
         StartReloading();
     }
 

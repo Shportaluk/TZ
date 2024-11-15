@@ -1,19 +1,19 @@
 using UnityEngine;
 
-public class BoxGenerator : IMeshGenerator
+public class BoxMeshGenerator : IMeshGenerator
 {
     private static readonly Vector3[] _vertices = {
             // Front face
-            new Vector3(-1f, -1f, 1f),
-            new Vector3(1f, -1f, 1f),
-            new Vector3(1f, 1f, 1f),
-            new Vector3(-1f, 1f, 1f), 
+            new Vector3(-0.5f, -0.5f, 0.5f),
+            new Vector3(0.5f, -0.5f, 0.5f),
+            new Vector3(0.5f, 0.5f, 0.5f),
+            new Vector3(-0.5f, 0.5f, 0.5f), 
 
             // Back face
-            new Vector3(-1f, -1f, -1f),
-            new Vector3(1f, -1f, -1f),
-            new Vector3(1f, 1f, -1f),
-            new Vector3(-1f, 1f, -1f),
+            new Vector3(-0.5f, -0.5f, -0.5f),
+            new Vector3(0.5f, -0.5f, -0.5f),
+            new Vector3(0.5f, 0.5f, -0.5f),
+            new Vector3(-0.5f, 0.5f, -0.5f),
         };
 
     private static readonly int[] _triangles = {
@@ -53,6 +53,7 @@ public class BoxGenerator : IMeshGenerator
         };
 
 
+
     public Mesh Generate(Vector3 scale = default)
     {
         Vector3[] vertices;
@@ -69,7 +70,11 @@ public class BoxGenerator : IMeshGenerator
             }
         }
 
+        return Generate(vertices);
+    }
 
+    public Mesh Generate(Vector3[] vertices)
+    {
         Mesh mesh = new Mesh();
         mesh.name = "BoxMesh";
         mesh.vertices = vertices;
@@ -78,5 +83,10 @@ public class BoxGenerator : IMeshGenerator
         mesh.uv = uv;
 
         return mesh;
+    }
+
+    public Vector3[] GetVertices()
+    {
+        return _vertices;
     }
 }

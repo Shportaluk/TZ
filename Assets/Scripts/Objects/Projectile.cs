@@ -15,7 +15,14 @@ public class Projectile : BasePoolElement
     [SerializeField] private Material _material;
     [SerializeField] private BoxCollider _collider;
     [SerializeField] private AlternativeRigidBody _alternativeRigidBody;
-    private static readonly IMeshGenerator _boxGenerator = new BoxGenerator();
+
+    private const float RANDOM_MESH_VERTICES_SIZE = 0.1f;
+
+    private static readonly IMeshGenerator _meshGenerator =
+        new RandomizeVerticlesMeshDecorator(
+            new BoxMeshGenerator(),
+            RANDOM_MESH_VERTICES_SIZE);
+
     private float _currentTimeDuration = 0f;
     private int _currentTouchs = 0;
 
@@ -24,10 +31,7 @@ public class Projectile : BasePoolElement
     {
         _meshRenderer.material = _material;
 
-        var size = RandomSize(_sizeMin, _sizeMax);
-        _meshFilter.mesh = _boxGenerator.Generate(size);
-
-        _collider.size = size;
+        _collider.size = Vector3.one;
 
         _alternativeRigidBody.onCollisionEnter += OnAlternativeRigidBodyCollisionEnter;
     }
@@ -46,6 +50,7 @@ public class Projectile : BasePoolElement
     {
         base.SetUse();
         gameObject.SetActive(true);
+        _meshFilter.mesh = _meshGenerator.Generate(Vector3.one);
         _currentTimeDuration = 0f;
         _currentTouchs = 0;
         _alternativeRigidBody.ResetVelocity();
@@ -55,11 +60,6 @@ public class Projectile : BasePoolElement
     {
         base.SetUnUse();
         gameObject.SetActive(false);
-    }
-
-    private Vector3 RandomSize(float min, float max)
-    {
-        return Vector3.one * UnityEngine.Random.Range(min, max);
     }
 
     public void AddForce(float power)

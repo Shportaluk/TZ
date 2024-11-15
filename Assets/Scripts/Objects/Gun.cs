@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
+    public event Action<float> onChangedPower;
     public event Action<float> onReloadingProgress;
+
     public bool IsReloading { get; private set; } = false;
+    public float Power => _power;
 
     [SerializeField] private float _power = 10000;
     [SerializeField] private Transform _tranfromRotationX;
@@ -66,6 +69,7 @@ public class Gun : MonoBehaviour
     public void SetPower(float power)
     {
         _power = power;
+        onChangedPower?.Invoke(power);
     }
 
 

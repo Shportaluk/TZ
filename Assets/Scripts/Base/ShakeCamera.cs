@@ -5,45 +5,35 @@ public class ShakeCamera : MonoBehaviour
 {
     public bool IsShaking { get; private set; } = false;
 
-    [SerializeField] private float _shakeStrength;
+    [SerializeField, Range(0, 1)] private float _ratio = 0.2f;
+    [SerializeField] private Vector3 _shakeOffset;
     [SerializeField] private float _duration;
     private Vector3 _startPosition;
 
 
     public void Shake(float multiplier = 1f)
     {
-        Shake(_shakeStrength * multiplier, _duration);
-    }
-
-    public void Shake(float shakeStrength, float duration = 0.1f)
-    {
         if (!IsShaking)
         {
-            StartCoroutine(ShakeCor(shakeStrength, duration));
+            StartCoroutine(ShakeCor(_duration, multiplier));
         }
     }
 
-    private IEnumerator ShakeCor(float shakeStrength, float duration)
+    private IEnumerator ShakeCor(float duration, float multiplier = 1f)
     {
         IsShaking = true;
         _startPosition = transform.localPosition;
-        float time = 0f;
+        PointsLerp pointsLerp = new PointsLerp();
+        pointsLerp.Add(0, transform.localPosition);
+        pointsLerp.Add(_ratio, transform.localPosition + (_shakeOffset * multiplier));
+        pointsLerp.Add(1, transform.localPosition);
 
-        while (time < duration * 0.1f)
+        float time = 0;
+        while(time < duration)
         {
-            Vector3 offset = new Vector3(0f, 0f, -shakeStrength * (1 - time / (duration * 0.1f)));
-            transform.localPosition = _startPosition + offset;
-            time += Time.deltaTime;
+            transform.localPosition = pointsLerp.Lerp(time / duration);
             yield return null;
-        }
-
-
-        time = 0f;
-        while (time < duration * 0.9f)
-        {
-            transform.localPosition = Vector3.Lerp(transform.localPosition, _startPosition, time / (duration * 0.9f));
             time += Time.deltaTime;
-            yield return null;
         }
 
         transform.localPosition = _startPosition;

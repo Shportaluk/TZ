@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public class PCGunController : IGunController
 {
     private Gun _gun;
-
+    private bool _isMouseDown = false;
 
     public void Init(Gun gun)
     {
@@ -18,7 +18,17 @@ public class PCGunController : IGunController
             _gun.Fire();
         }
 
-        if (Input.GetMouseButton(0) && EventSystem.current.IsPointerOverGameObject() == false)
+
+        if (Input.GetMouseButtonDown(0) && EventSystem.current.IsPointerOverGameObject() == false)
+        {
+            _isMouseDown = true;
+        }
+        if(Input.GetMouseButtonUp(0))
+        {
+            _isMouseDown = false;
+        }
+
+        if(_isMouseDown)
         {
             float speed = 500;
             float x = Input.GetAxis("Mouse X") / Screen.width * 1920f * Time.deltaTime * speed;

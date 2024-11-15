@@ -1,5 +1,4 @@
-#define DEBUG
-using System;
+//#define DEBUG_MOD
 using UnityEngine;
 
 
@@ -58,7 +57,7 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
 
     public void OnAlternativeCollisionEnter(AlternativeCollision collision)
     {
-#if DEBUG
+#if DEBUG_MOD
         Debug.Log(collision.collider.gameObject.name);
         Debug.DrawRay(Collider.bounds.center, collision.contactNormal, Color.red, 0.5f);
         Debug.DrawRay(Collider.bounds.center, _velocity, Color.cyan, 0.5f);

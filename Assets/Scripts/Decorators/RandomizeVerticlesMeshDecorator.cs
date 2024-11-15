@@ -25,13 +25,14 @@ public class RandomizeVerticlesMeshDecorator : IMeshGenerator
     {
         var verticles = _meshGenerator.GetVertices();
         float halfSize = _randomSize / 2f;
+        Vector3[] verticesToReturn = new Vector3[verticles.Length];
 
         for (int i = 0; i < verticles.Length; i++)
         {
-            verticles[i] += RandomVector(-halfSize, halfSize);
+            verticesToReturn[i] = verticles[i] + RandomVector(-halfSize, halfSize);
         }
 
-        return verticles;
+        return verticesToReturn;
     }
 
     private Vector3 RandomVector(float min, float max)

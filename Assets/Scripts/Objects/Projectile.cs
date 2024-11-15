@@ -16,7 +16,7 @@ public class Projectile : BasePoolElement
     [SerializeField] private BoxCollider _collider;
     [SerializeField] private AlternativeRigidBody _alternativeRigidBody;
 
-    private const float RANDOM_MESH_VERTICES_SIZE = 0.1f;
+    private const float RANDOM_MESH_VERTICES_SIZE = 0.2f;
 
     private static readonly IMeshGenerator _meshGenerator =
         new RandomizeVerticlesMeshDecorator(

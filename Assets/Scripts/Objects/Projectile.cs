@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class Projectile : BasePoolElement
 {
+    public event Action<Projectile, AlternativeCollision> onCollision;
     public event Action<Projectile> onExplotion;
 
+    public Vector3 Velocity => _alternativeRigidBody.Velocity;
+    public Vector3 PreviewVelocity => _alternativeRigidBody.PreviewVelocity;
     [SerializeField] private float _sizeMin = 0.75f;
     [SerializeField] private float _sizeMax = 1.25f;
     [SerializeField] private float _duration = 2f;
-    [SerializeField, Min(1)] private int _minTouchesToExplotiob = 2;
+    [SerializeField, Min(1)] private int _minCollisionToExplotion = 2;
     [SerializeField] private MeshRenderer _meshRenderer;
     [SerializeField] private MeshFilter _meshFilter;
     [SerializeField] private Material _material;
@@ -24,8 +27,7 @@ public class Projectile : BasePoolElement
             RANDOM_MESH_VERTICES_SIZE);
 
     private float _currentTimeDuration = 0f;
-    private int _currentTouchs = 0;
-
+    private int _currentCollision = 0;
 
     private void Awake()
     {
@@ -52,7 +54,7 @@ public class Projectile : BasePoolElement
         gameObject.SetActive(true);
         _meshFilter.mesh = _meshGenerator.Generate(Vector3.one);
         _currentTimeDuration = 0f;
-        _currentTouchs = 0;
+        _currentCollision = 0;
         _alternativeRigidBody.ResetVelocity();
     }
 
@@ -67,10 +69,12 @@ public class Projectile : BasePoolElement
         _alternativeRigidBody.AddForce(transform.forward * power);
     }
 
-    private void OnAlternativeRigidBodyCollisionEnter(AlternativeRigidBody arg1, AlternativeCollision arg2)
+    private void OnAlternativeRigidBodyCollisionEnter(AlternativeRigidBody arg1, AlternativeCollision collision)
     {
-        _currentTouchs++;
-        if(_currentTouchs >= _minTouchesToExplotiob)
+        _currentCollision++;
+        onCollision?.Invoke(this, collision);
+        Debug.Log("OnAlternativeRigidBodyCollisionEnter: " + arg1.gameObject.name + " with: " + collision.collider.gameObject.name);
+        if (_currentCollision >= _minCollisionToExplotion)
         {
             onExplotion?.Invoke(this);
             SetUnUse();

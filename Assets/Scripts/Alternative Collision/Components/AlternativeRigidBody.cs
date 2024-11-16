@@ -10,6 +10,8 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
     public Collider Collider => _collider;
     public BodyType Type => _bodyType;
     public float Mass => _mass;
+    public Vector3 Velocity => _data.velocity;
+    public Vector3 PreviewVelocity { get; private set; }
 
     [SerializeField] private BodyType _bodyType = BodyType.Dynamic;
     [SerializeField] private Collider _collider;
@@ -41,6 +43,7 @@ public class AlternativeRigidBody : MonoBehaviour, ICollisionHandler
 
     private void ApplyPhysics()
     {
+        PreviewVelocity = Velocity;
         _data.position = transform.position;
         _data = Simulate(_data);
         transform.position = _data.position;

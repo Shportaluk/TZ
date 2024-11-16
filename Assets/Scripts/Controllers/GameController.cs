@@ -18,12 +18,16 @@ public class GameController : MonoBehaviour
 
     private IGunController _gunController = new PCGunController();
     private ProjectileExplotionHandler _projectileExplotionHandler;
+    private ProjectileCollisionHandler _projectileCollisionHandler;
     private ShakeCameraHandler _cameraShakeHandler;
 
     private void Awake()
     {
         _projectileExplotionHandler = new ProjectileExplotionHandler(_projectilesPool, _explotionEffectsPool.Get);
         _projectileExplotionHandler.Run();
+
+        _projectileCollisionHandler = new ProjectileCollisionHandler(_projectilesPool);
+        _projectileCollisionHandler.Run();
 
         _cameraShakeHandler = new ShakeCameraHandler(_shakeCamera);
         _cameraShakeHandler.Add(_gun);
